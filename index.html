@@ -1,13 +1,78 @@
 <!DOCTYPE html>
     <head>
         <meta http-equiv="content-type" charset="UTF-8">
+        <style>
+            .tabs {
+                margin-top: 50px;
+                padding-bottom: 40px;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                width: 400px;
+                margin: 0 auto;
+            }
+            .tab_item {
+                width: calc(100%/2);
+                border-bottom: 3px solid #ff9736;
+                background-color: #d9d9d9;
+                line-height: 50px;
+                font-size: 16px;
+                text-align: center;
+                color: #565656;
+                display: block;
+                float: left;
+                text-align: center;
+                font-weight: bold;
+                transition: all 0.2s ease;
+            }
+            input[name="tab_item"] {
+                display: none;
+            }
+            .tabs input:checked + .tab_item {
+                background-color: #ff9736;
+            }
+            /*コンテンツ*/
+            .panel {
+                display: none;
+                width: 400px;
+            }
+            .tabs #plane_tab:checked ~ #plane_area {
+                display: block;
+            }
+            .tabs #boxes_tab:checked ~ #boxes_area {
+                display: block;
+            }
+            .detail {
+                margin: 5px;
+                background-color: rgb(197, 197, 197);
+            }
+            /*テキストボックス*/
+            textarea {
+                box-sizing: border-box;
+                width: 100%;
+            }
+        </style>
     </head>
     <body>
-        タグ転送設定
-        <textarea id="trans" cols="50" rows="10""></textarea>
-        <div>
-            <input type="checkbox" id="unable" name="unable">
-            <label for="unable">無効</label>
+        <div class="tabs">
+            <input id="boxes_tab" type="radio" name="tab_item" checked>
+            <label class="tab_item" for="boxes_tab">ボックス</label>
+            <input id="plane_tab" type="radio" name="tab_item">
+            <label class="tab_item" for="plane_tab">テキスト</label>
+            <div id="plane_area" class="panel">
+                <div>
+                    <input type="button" id="save_btn_plane" value="保存">
+                    <input type="checkbox" id="unable" name="unable">
+                    <label for="unable">無効</label>
+                </div>
+                ■ タグ転送設定
+                <textarea id="trans" cols="50" rows="10"></textarea>
+            </div>
+            <div id="boxes_area" class="panel">
+                <input type="button" id="add_btn"  value="追加">
+                <input type="button" id="save_btn" value="保存">
+                <input type="checkbox" id="unable2" name="unable">
+                <label for="unable">無効</label>
+            </div>
         </div>
     </body>
     <script src="popup.js"></script>
