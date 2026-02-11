@@ -1,79 +1,299 @@
 <!DOCTYPE html>
-    <head>
-        <meta http-equiv="content-type" charset="UTF-8">
-        <style>
-            .tabs {
-                margin-top: 50px;
-                padding-bottom: 40px;
-                background-color: #fff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-                width: 400px;
-                margin: 0 auto;
-            }
-            .tab_item {
-                width: calc(100%/2);
-                border-bottom: 3px solid #ff9736;
-                background-color: #d9d9d9;
-                line-height: 50px;
-                font-size: 16px;
-                text-align: center;
-                color: #565656;
-                display: block;
-                float: left;
-                text-align: center;
-                font-weight: bold;
-                transition: all 0.2s ease;
-            }
-            input[name="tab_item"] {
-                display: none;
-            }
-            .tabs input:checked + .tab_item {
-                background-color: #ff9736;
-            }
-            /*コンテンツ*/
-            .panel {
-                display: none;
-                width: 400px;
-            }
-            .tabs #plane_tab:checked ~ #plane_area {
-                display: block;
-            }
-            .tabs #boxes_tab:checked ~ #boxes_area {
-                display: block;
-            }
-            .detail {
-                margin: 5px;
-                background-color: rgb(197, 197, 197);
-            }
-            /*テキストボックス*/
-            textarea {
-                box-sizing: border-box;
-                width: 100%;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="tabs">
-            <input id="boxes_tab" type="radio" name="tab_item" checked>
-            <label class="tab_item" for="boxes_tab">ボックス</label>
-            <input id="plane_tab" type="radio" name="tab_item">
-            <label class="tab_item" for="plane_tab">テキスト</label>
-            <div id="plane_area" class="panel">
-                <div>
-                    <input type="button" id="save_btn_plane" value="保存">
-                    <input type="checkbox" id="unable" name="unable">
-                    <label for="unable">無効</label>
-                </div>
-                ■ タグ転送設定
-                <textarea id="trans" cols="50" rows="10"></textarea>
+<head>
+    <meta http-equiv="content-type" charset="UTF-8">
+    <style>
+        :root {
+            --bg: #f4f7f5;
+            --panel: #ffffff;
+            --accent-panel: #d1e7da;
+            --accent: #22a06b;
+            --accent-strong: #138a56;
+            --text: #1f2a24;
+            --muted: #6a7a70;
+            --chip-bg: #e8f4ee;
+            --chip-border: #c6e6d6;
+            --chip-selected: #2b7bff;
+            --chip-selected-bg: #e5efff;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: linear-gradient(160deg, #eef5f1 0%, #f9faf9 100%);
+            font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+            color: var(--text);
+        }
+        .tabs {
+            width: 420px;
+            margin: 14px auto;
+            padding: 14px;
+            background: var(--panel);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+        .tab_item {
+            width: calc(100%/2);
+            background-color: #e6ece8;
+            line-height: 44px;
+            font-size: 14px;
+            text-align: center;
+            color: var(--muted);
+            display: block;
+            float: left;
+            font-weight: 700;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.2s ease;
+        }
+        input[name="tab_item"] {
+            display: none;
+        }
+        .tabs input:checked + .tab_item {
+            background-color: var(--accent);
+            color: #fff;
+        }
+        .panel {
+            display: none;
+            width: 100%;
+            padding-top: 12px;
+            clear: both;
+        }
+        .tabs #plane_tab:checked ~ #plane_area {
+            display: block;
+        }
+        .tabs #boxes_tab:checked ~ #boxes_area {
+            display: block;
+        }
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .panel-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 8px 12px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn:hover {
+            background: var(--accent-strong);
+        }
+        .btn.secondary {
+            background: #dfe7e2;
+            color: var(--text);
+        }
+        .btn.secondary:hover {
+            background: #cddad3;
+        }
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .toggle input {
+            accent-color: var(--accent);
+        }
+        .textarea {
+            width: 100%;
+            min-height: 160px;
+            border-radius: 12px;
+            border: 1px solid #d8e2dc;
+            padding: 10px;
+            font-size: 13px;
+            background: #fbfcfb;
+        }
+        .hubs {
+            display: grid;
+            gap: 12px;
+        }
+        .boxes-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+        }
+        .hubs-scroll {
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .panel-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 12px;
+            padding-right: 12px;
+            border-top: 1px solid #777c7a;
+            background: var(--accent-panel);
+        }
+        .hub-card {
+            border: 1px solid #e3ebe7;
+            border-radius: 14px;
+            padding: 10px 12px;
+            background: #fbfdfc;
+        }
+        .hub-head {
+            display: flex;
+            padding: 4px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            background: var(--accent-panel);
+        }
+        .hub-toggle {
+            border: none;
+            background: #eef4f0;
+            color: var(--muted);
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .hub-card.collapsed .hub-body {
+            display: none;
+        }
+        .hub-title {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.06em;
+        }
+        .hub-actions {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .hub-actions label {
+            font-size: 12px;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .hub-actions .delete {
+            border: none;
+            background: #ffe7e7;
+            color: #a83a3a;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .section {
+            margin-top: 8px;
+        }
+        .section-title {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: var(--chip-bg);
+            border: 1px solid var(--chip-border);
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .chip.selected {
+            background: var(--chip-selected-bg);
+            border-color: var(--chip-selected);
+            color: var(--chip-selected);
+        }
+        .chip .chip-x {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #d6e0da;
+            font-size: 12px;
+            line-height: 1;
+            color: #6d7c72;
+        }
+        .chip-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chip-input input {
+            flex: 1;
+            border-radius: 9999px;
+            border: 1px solid #d8e2dc;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        .chip-input .plus {
+            width: 26px;
+            height: 26px;
+            border-radius: 9999px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs">
+        <input id="boxes_tab" type="radio" name="tab_item" checked>
+        <label class="tab_item" for="boxes_tab">ボックス</label>
+        <input id="plane_tab" type="radio" name="tab_item">
+        <label class="tab_item" for="plane_tab">テキスト</label>
+        <div id="plane_area" class="panel">
+            <div class="toolbar">
             </div>
-            <div id="boxes_area" class="panel">
-                <input type="button" id="add_btn"  value="追加">
-                <input type="button" id="save_btn" value="保存">
-                <input type="checkbox" id="unable2" name="unable">
-                <label for="unable">無効</label>
+            <div class="section-title">タグ転送設定</div>
+            <textarea id="trans" class="textarea" cols="50" rows="10"></textarea>
+            <div class="panel-footer">
+                <button class="btn" id="save_btn_plane">保存</button>
+                <label class="toggle"><input type="checkbox" id="autosave" name="autosave">自動保存</label>
+                <label class="toggle"><input type="checkbox" id="unable" name="unable">無効</label>
             </div>
         </div>
-    </body>
-    <script src="popup.js"></script>
+        <div id="boxes_area" class="panel">
+            <div class="boxes-panel">
+                <div class="hubs-scroll">
+                    <div id="hubs" class="hubs"></div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn secondary" id="add_btn">追加</button>
+                    <button class="btn" id="save_btn">保存</button>
+                    <label class="toggle"><input type="checkbox" id="autosave2" name="autosave">自動保存</label>
+                    <label class="toggle"><input type="checkbox" id="unable2" name="unable">無効</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="popup.js"></script>
 </html>

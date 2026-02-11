@@ -2,3 +2,7 @@
 .vscode
 node_modules
 package-lock.json
+todo
+.prettier*
+*.zip
+*.svg
